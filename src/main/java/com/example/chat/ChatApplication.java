@@ -10,4 +10,9 @@ public class ChatApplication {
 		SpringApplication.run(ChatApplication.class, args);
 	}
 
+//	@Bean
+//	public PasswordEncoder passwordEncoder() {
+//		return new BCryptPasswordEncoder();
+//	}
+
 }
