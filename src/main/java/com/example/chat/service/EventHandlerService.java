@@ -1,6 +1,7 @@
 package com.example.chat.service;
 
 import com.example.chat.dto.ChatDTO;
+import com.example.chat.dto.EmailDTO;
 import com.example.chat.dto.UserDTO;
 import com.example.chat.enumeration.MessageStatus;
 import com.example.chat.errorHandling.BusinessNotFound;
@@ -8,6 +9,8 @@ import com.example.chat.events.ChatEvent;
 import com.example.chat.events.CommunicationsEvent;
 import com.example.chat.events.WelcomeEvent;
 import com.example.chat.model.Message;
+import com.example.chat.model.User;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -23,6 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.springframework.web.servlet.mvc.method.annotation.SseEmitter.event;
 
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class EventHandlerService {
     private static final AtomicInteger ID_Counter = new AtomicInteger(1);
@@ -31,11 +35,13 @@ public class EventHandlerService {
 
     private final UserService userService;
     private final MessageService messageService;
+    private final EmailService emailService;
 
-    public EventHandlerService(UserService userService, MessageService messageService) {
-        this.userService = userService;
-        this.messageService = messageService;
-    }
+//    public EventHandlerService(UserService userService, MessageService messageService, EmailService emailService) {
+//        this.userService = userService;
+//        this.messageService = messageService;
+//        this.emailService = emailService;
+//    }
 
 
     public SseEmitter registerUser(String userName) {
@@ -106,6 +112,15 @@ public class EventHandlerService {
 
     public void storeMsgForLater(ChatDTO chatDTO, String sender) {
         messageService.create(chatDTO, sender, MessageStatus.PENDING, LocalDateTime.now());
+        User user = userService.getUserByUserName(chatDTO.userName());
+        String body = "Dear Mr/Ms " + user.getLastName() + ",\n\n"
+                + "Please note that you have a new message from "
+                + sender
+                + ", waiting to be opened!\n"
+                + "Please log in to do so!\n\n"
+                + "Regards,\nCake Shop Chat";
+        EmailDTO emailDTO = new EmailDTO("You have new pending message", user.getEmail(), body);
+        emailService.sendSimpleEmail(emailDTO);
     }
 
     private void sendMessage(UserDTO userDTO, CommunicationsEvent communicationsEvent) {
