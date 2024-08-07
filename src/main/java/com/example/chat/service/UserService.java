@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 public class UserService {
     private final UserRepository userRepository;
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
-//    private final PasswordEncoder passwordEncoder;
     public User getById(long id) {
         User user = userRepository.getById(id);
         if (user != null) {
@@ -41,7 +40,7 @@ public class UserService {
     public UserResponse getDTOByUserName(String userName) {
         User user = userRepository.getByUserName(userName);
         if (user != null) {
-            return new UserResponse(user.getFirstName(), user.getLastName(), user.getUserName(), user.getEmail());
+            return new UserResponse(user.getFirstName(), user.getLastName(), user.getUsername(), user.getEmail());
         } else {
             BusinessNotFound businessNotFound = new BusinessNotFound("User with userName: " + userName + " not found!");
             logger.error("Error: getById: userName: {} not found!", userName, businessNotFound);
@@ -53,11 +52,11 @@ public class UserService {
         return userRepository.getStatusByUserName(userName);
     }
 
-    public void create(UserRequest userRequest) {
-        logger.info("Request to DB: create new user with userName: {}", userRequest.userName());
-        userRepository.save(userRequest.firstName(), userRequest.lastName(), userRequest.email(), userRequest.userName(),
-                userRequest.password(), UserStatus.ONLINE.name());
-    }
+//    public void create(UserRequest userRequest) {
+//        logger.info("Request to DB: create new user with userName: {}", userRequest.userName());
+//        userRepository.save(userRequest.firstName(), userRequest.lastName(), userRequest.email(), userRequest.userName(),
+//                userRequest.password(), UserStatus.ONLINE.name());
+//    }
 
     public void updateStatus(String userName, UserStatus status) {
         userRepository.updateStatusByUserName(userName, status.name());

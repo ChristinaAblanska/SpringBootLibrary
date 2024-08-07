@@ -47,7 +47,7 @@ class UserServiceTest {
 
     @Test
     void givenValidUserName_whenGettingUserByUserName_thenReturnUser() {
-        String userName = user.getUserName();
+        String userName = user.getUsername();
         User expectedUser = user;
         Mockito.when(userRepository.getByUserName(userName)).thenReturn(expectedUser);
         User actualUser = userService.getUserByUserName(userName);
@@ -56,7 +56,7 @@ class UserServiceTest {
 
     @Test
     void givenInValidUserName_whenGettingUserByUserName_thenExceptionThrown() {
-        String userName = user.getUserName();
+        String userName = user.getUsername();
         Mockito.when(userRepository.getByUserName(userName)).thenReturn(null);
         BusinessNotFound exception = assertThrows(BusinessNotFound.class,
                 () -> userService.getUserByUserName(userName));
@@ -67,9 +67,9 @@ class UserServiceTest {
 
     @Test
     void givenValidUserName_whenGettingDTOByUserName_thenReturnUserResponse() {
-        String userName = user.getUserName();
+        String userName = user.getUsername();
         UserResponse expectedUser = new UserResponse(user.getFirstName(), user.getLastName(),
-                user.getUserName(), user.getEmail());
+                user.getUsername(), user.getEmail());
         Mockito.when(userRepository.getByUserName(userName)).thenReturn(user);
         UserResponse actualUser = userService.getDTOByUserName(userName);
         assertEquals(expectedUser, actualUser);
@@ -77,7 +77,7 @@ class UserServiceTest {
 
     @Test
     void givenInValidUserName_whenGettingDTOByUserName_thenExceptionThrown() {
-        String userName = user.getUserName();
+        String userName = user.getUsername();
         Mockito.when(userRepository.getByUserName(userName)).thenReturn(null);
         BusinessNotFound exception = assertThrows(BusinessNotFound.class,
                 () -> userService.getDTOByUserName(userName));
@@ -88,7 +88,7 @@ class UserServiceTest {
 
     @Test
     void givenValidUserName_whenGettingStatusByUserName_thenReturnStatus() {
-        String userName = user.getUserName();
+        String userName = user.getUsername();
         UserStatus expectedStatus = user.getStatus();
         Mockito.when(userRepository.getStatusByUserName(userName)).thenReturn(expectedStatus);
         UserStatus actualStatus = userService.getStatus(userName);
@@ -98,7 +98,7 @@ class UserServiceTest {
     @Test
     void create() {
         UserRequest userRequest = new UserRequest(user.getFirstName(), user.getLastName(), user.getEmail(),
-                user.getUserName(), user.getPassword());
+                user.getUsername(), user.getPassword());
         userService.create(userRequest);
         Mockito.verify(userRepository, Mockito.times(1)).save(userRequest.firstName(), userRequest.lastName(), userRequest.email(), userRequest.userName(),
                 user.getPassword(), UserStatus.ONLINE.name());
@@ -106,7 +106,7 @@ class UserServiceTest {
 
     @Test
     void updateStatusTest() {
-        String userName = user.getUserName();
+        String userName = user.getUsername();
         userService.updateStatus(userName, UserStatus.OFFLINE);
         Mockito.verify(userRepository, Mockito.times(1))
                 .updateStatusByUserName(userName, UserStatus.OFFLINE.name());
@@ -149,7 +149,7 @@ class UserServiceTest {
 
     @Test
     void givenValidUserName_whenCheckingIfUserExistsByUserName_thenReturnTRUE() {
-        String userName = user.getUserName();
+        String userName = user.getUsername();
         User expectedUser = user;
         Mockito.when(userRepository.getByUserName(userName)).thenReturn(expectedUser);
         assertTrue(userService.existsByUserName(userName));
@@ -157,7 +157,7 @@ class UserServiceTest {
 
     @Test
     void givenInValidUserName_whenCheckingIfUserExistsByUserName_thenReturnFALSE() {
-        String userName = user.getUserName();
+        String userName = user.getUsername();
         User expectedUser = null;
         Mockito.when(userRepository.getByUserName(userName)).thenReturn(expectedUser);
         assertFalse(userService.existsByUserName(userName));

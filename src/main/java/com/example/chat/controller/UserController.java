@@ -30,11 +30,6 @@ public class UserController {
         }
     }
 
-    @PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> create(@RequestBody UserRequest userRequest) {
-        userService.create(userRequest);
-        return new ResponseEntity<>(HttpStatus.CREATED);
-    }
 
     @DeleteMapping
     public ResponseEntity<?> delete(@RequestParam long id) {

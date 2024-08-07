@@ -26,7 +26,7 @@ public class MessageService {
     public void create(ChatDTO chatDTO, String fromUser, MessageStatus status, LocalDateTime timestamp) {
         User sender = userService.getUserByUserName(fromUser);
         User receiver = userService.getUserByUserName(chatDTO.userName());
-        logger.info("Request to DB: create new message to userName: {}", receiver.getUserName());
+        logger.info("Request to DB: create new message to userName: {}", receiver.getUsername());
         messageRepository.save(chatDTO.messageContent(), sender.getId(), receiver.getId(), status, timestamp);
     }
 

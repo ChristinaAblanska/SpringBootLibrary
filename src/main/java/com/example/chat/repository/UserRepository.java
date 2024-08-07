@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Repository
@@ -91,5 +92,9 @@ public class UserRepository {
     public boolean existsByUserName(String userName) {
         User user = getByUserName(userName);
         return (user != null) || !user.isEmpty();
+    }
+
+    public Optional<User> findByUserName(String username) {
+        return Optional.ofNullable(getByUserName(username));
     }
 }
