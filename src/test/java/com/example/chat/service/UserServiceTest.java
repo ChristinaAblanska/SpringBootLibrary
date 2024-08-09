@@ -21,9 +21,9 @@ class UserServiceTest {
     void setUp() {
         userRepository = Mockito.mock(UserRepository.class);
         userService = new UserService(userRepository);
-        user = new User(12L, "Dan", "Brown", "dan.brown@gmail.com",
-                "danBrown",
-                "$2a$10$W5fwnQAG.yqpBr4WJ7neFeUDmVxe4DOcCqIDd0O1QEPIuYCbImKIu", UserStatus.ONLINE);
+        user = new User(28L, "Kate", "Winslett", "kate.winslett@gmail.com",
+                "Kate",
+                "$2a$10$u4eU9d.OFQTlJdYum1tykunFmy.rKdA565cwr/t0tfHAUf/of/jt2", UserStatus.ONLINE);
     }
 
     @Test
@@ -66,7 +66,7 @@ class UserServiceTest {
     }
 
     @Test
-    void givenValidUserName_whenGettingDTOByUserName_thenReturnUserResponse() {
+    void givenValidUserName_whenGettingUserResponseByUserName_thenReturnUserResponse() {
         String userName = user.getUserName();
         UserResponse expectedUser = new UserResponse(user.getFirstName(), user.getLastName(),
                 user.getUserName(), user.getEmail());
@@ -76,8 +76,8 @@ class UserServiceTest {
     }
 
     @Test
-    void givenInValidUserName_whenGettingDTOByUserName_thenExceptionThrown() {
-        String userName = user.getUserName();
+    void givenInValidUserName_whenGettingUserResponseByUserName_thenExceptionThrown() {
+        String userName = "InvalidUserName";
         Mockito.when(userRepository.getByUserName(userName)).thenReturn(null);
         BusinessNotFound exception = assertThrows(BusinessNotFound.class,
                 () -> userService.getUserResponseByUserName(userName));
@@ -85,6 +85,8 @@ class UserServiceTest {
         String actualMessage = exception.getMessage();
         assertEquals(expectedMessage, actualMessage);
     }
+
+
 
     @Test
     void givenValidUserName_whenGettingStatusByUserName_thenReturnStatus() {

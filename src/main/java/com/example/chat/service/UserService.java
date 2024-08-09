@@ -10,15 +10,17 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
 @RequiredArgsConstructor
 @Service
 public class UserService {
     private final UserRepository userRepository;
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
-//    private final PasswordEncoder passwordEncoder;
+
+    //    private final PasswordEncoder passwordEncoder;
     public User getById(long id) {
         User user = userRepository.getById(id);
-        if (user != null) {
+        if (user == null) {
             BusinessNotFound businessNotFound = new BusinessNotFound("User with id: " + id + " not found!");
             logger.error("Error: getById: Userid: {} not found!", id, businessNotFound);
             throw businessNotFound;
@@ -37,14 +39,13 @@ public class UserService {
     }
 
     public UserResponse getUserResponseByUserName(String userName) {
-        try {
-            User user = userRepository.getByUserName(userName);
-            return new UserResponse(user.getFirstName(), user.getLastName(), user.getUserName(), user.getEmail());
-        } catch (RuntimeException e)
-        {
-            logger.error("Error: getById: userName: {} not found!", userName, e);
-            return new UserResponse("", "", "", "");
+        User user = userRepository.getByUserName(userName);
+        if (user == null) {
+            BusinessNotFound businessNotFound = new BusinessNotFound("User with userName: " + userName + " not found!");
+            logger.error("Error: getUserResponseByUserName: userName: {} not found!", userName, businessNotFound);
+            throw businessNotFound;
         }
+        return new UserResponse(user.getFirstName(), user.getLastName(), user.getUserName(), user.getEmail());
     }
 
     public UserStatus getStatus(String userName) {

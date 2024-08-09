@@ -19,4 +19,7 @@ public record UserRequest(
 //        @ValidPassword
         String password
 ) {
+        public UserRequest withEncodedPass(String encodedPass) {
+                return new UserRequest(firstName, lastName, email, userName, encodedPass);
+        }
 }
