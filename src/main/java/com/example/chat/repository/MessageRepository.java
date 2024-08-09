@@ -19,50 +19,6 @@ public class MessageRepository {
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final UserRepository userRepository;
 
-//    public Message getMessageBySenderId(long senderId) {
-//        return jdbcTemplate.queryForObject("""
-//                SELECT id, content, sender_id, receiver_id, status, time_stamp
-//                FROM message
-//                WHERE sender_id=:senderId;
-//                """, new MapSqlParameterSource("senderId", senderId), new RowMapper<Message>() {
-//            @Override
-//            public Message mapRow(ResultSet rs, int rowNum) throws SQLException {
-//                Message message = new Message();
-//                message.setId(rs.getLong("id"));
-//                message.setContent("content");
-//                long senderId = rs.getLong("sender_id");
-//                message.setSender(userRepository.getById(senderId));
-//                long receiverId = rs.getLong("receiver_id");
-//                message.setReceiver(userRepository.getById(receiverId));
-//                String status = rs.getString("status");
-//                message.setStatus(MessageStatus.valueOf(status));
-//                return message;
-//            }
-//        });
-//    }
-//
-//    public Message getMessageByReceiverId(long receiverId) {
-//        return jdbcTemplate.queryForObject("""
-//                SELECT id, content, sender_id, receiver_id, status, time_stamp
-//                FROM message
-//                WHERE receiver_id=:receiverId;
-//                """, new MapSqlParameterSource("receiverId", receiverId), new RowMapper<Message>() {
-//            @Override
-//            public Message mapRow(ResultSet rs, int rowNum) throws SQLException {
-//                Message message = new Message();
-//                message.setId(rs.getLong("id"));
-//                message.setContent("content");
-//                long senderId = rs.getLong("sender_id");
-//                message.setSender(userRepository.getById(senderId));
-//                long receiverId = rs.getLong("receiver_id");
-//                message.setReceiver(userRepository.getById(receiverId));
-//                String status = rs.getString("status");
-//                message.setStatus(MessageStatus.valueOf(status));
-//                return message;
-//            }
-//        });
-//    }
-
     public List<Message> getAllPendingByReceiverId(long receiverId) {
         return jdbcTemplate.query("""
                 SELECT id, content, sender_id, receiver_id, status, time_stamp

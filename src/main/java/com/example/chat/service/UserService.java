@@ -19,33 +19,31 @@ public class UserService {
     public User getById(long id) {
         User user = userRepository.getById(id);
         if (user != null) {
-            return user;
-        } else {
             BusinessNotFound businessNotFound = new BusinessNotFound("User with id: " + id + " not found!");
             logger.error("Error: getById: Userid: {} not found!", id, businessNotFound);
             throw businessNotFound;
         }
+        return user;
     }
 
     public User getUserByUserName(String userName) {
         User user = userRepository.getByUserName(userName);
-        if (user != null) {
-            return user;
-        } else {
+        if (user == null) {
             BusinessNotFound businessNotFound = new BusinessNotFound("User with userName: " + userName + " not found!");
             logger.error("Error: getById: userName: {} not found!", userName, businessNotFound);
             throw businessNotFound;
         }
+        return user;
     }
 
-    public UserResponse getDTOByUserName(String userName) {
-        User user = userRepository.getByUserName(userName);
-        if (user != null) {
+    public UserResponse getUserResponseByUserName(String userName) {
+        try {
+            User user = userRepository.getByUserName(userName);
             return new UserResponse(user.getFirstName(), user.getLastName(), user.getUserName(), user.getEmail());
-        } else {
-            BusinessNotFound businessNotFound = new BusinessNotFound("User with userName: " + userName + " not found!");
-            logger.error("Error: getById: userName: {} not found!", userName, businessNotFound);
-            throw businessNotFound;
+        } catch (RuntimeException e)
+        {
+            logger.error("Error: getById: userName: {} not found!", userName, e);
+            return new UserResponse("", "", "", "");
         }
     }
 
@@ -64,14 +62,13 @@ public class UserService {
     }
 
     public void delete(long id) {
-        if (existsById(id)) {
-            userRepository.delete(id);
-            logger.info("Request to DB: delete user with id: {}", id);
-        } else {
+        if (!existsById(id)) {
             BusinessNotFound businessNotFound = new BusinessNotFound("User with id: " + id + " not found!");
             logger.error("Error: deleteById: Userid: {} not found!", id, businessNotFound);
             throw businessNotFound;
         }
+        userRepository.delete(id);
+        logger.info("Request to DB: delete user with id: {}", id);
     }
 
     public boolean existsById(long id) {
@@ -86,7 +83,7 @@ public class UserService {
 
     public boolean existsByUserName(String userName) {
         try {
-            UserResponse user = getDTOByUserName(userName);
+            UserResponse user = getUserResponseByUserName(userName);
             return user != null;
         } catch (BusinessNotFound e) {
             logger.error("Error: UserName: {} not found!", userName, e);

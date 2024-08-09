@@ -4,6 +4,7 @@ import com.example.chat.dto.ChatDTO;
 import com.example.chat.dto.EmailDTO;
 import com.example.chat.dto.UserDTO;
 import com.example.chat.enumeration.MessageStatus;
+import com.example.chat.enumeration.UserStatus;
 import com.example.chat.errorHandling.BusinessNotFound;
 import com.example.chat.events.ChatEvent;
 import com.example.chat.events.CommunicationsEvent;
@@ -37,13 +38,6 @@ public class EventHandlerService {
     private final MessageService messageService;
     private final EmailService emailService;
 
-//    public EventHandlerService(UserService userService, MessageService messageService, EmailService emailService) {
-//        this.userService = userService;
-//        this.messageService = messageService;
-//        this.emailService = emailService;
-//    }
-
-
     public SseEmitter registerUser(String userName) {
         SseEmitter sseEmitter = new SseEmitter(DEFAULT_TIMEOUT);
         UserDTO userDTO = new UserDTO(sseEmitter, userName);
@@ -53,6 +47,7 @@ public class EventHandlerService {
         sseEmitter.onTimeout(() -> removeAndLogError(userDTO));
 
         loggedInUsers.add(userDTO);
+        userService.updateStatus(userName, UserStatus.ONLINE);
         sendWelcomeToClient(userDTO);
 
         List<Message> pendingMessages = messageService.getAllPendingTo(userDTO.userName());
@@ -93,19 +88,18 @@ public class EventHandlerService {
 
     public boolean sendMsg(ChatDTO chatDTO, String sender) {
         boolean sent = false;
-        if (userService.existsByUserName(chatDTO.userName())) {
-            Set<UserDTO> users = Set.copyOf(loggedInUsers);
-            for (UserDTO user : users) {
-                if (user.userName().equals(chatDTO.userName())) {
-                    ChatEvent chatEvent = new ChatEvent(chatDTO.messageContent(), chatDTO.userName());
-                    sendMessage(user, chatEvent);
-                    messageService.create(chatDTO, sender, MessageStatus.SENT, LocalDateTime.now());
-                    sent = true;
-                    break;
-                }
-            }
-        } else {
+        if (!userService.existsByUserName(chatDTO.userName())) {
             throw new BusinessNotFound("Not a registered user!");
+        }
+        Set<UserDTO> users = Set.copyOf(loggedInUsers);
+        for (UserDTO user : users) {
+            if (user.userName().equals(chatDTO.userName())) {
+                ChatEvent chatEvent = new ChatEvent(chatDTO.messageContent(), chatDTO.userName());
+                sendMessage(user, chatEvent);
+                messageService.create(chatDTO, sender, MessageStatus.SENT, LocalDateTime.now());
+                sent = true;
+                break;
+            }
         }
         return sent;
     }
@@ -121,6 +115,8 @@ public class EventHandlerService {
                 + "Regards,\nCake Shop Chat";
         EmailDTO emailDTO = new EmailDTO("You have new pending message", user.getEmail(), body);
         emailService.sendSimpleEmail(emailDTO);
+
+        log.info("Message stored as PENDING for userName: {}", chatDTO.userName());
     }
 
     private void sendMessage(UserDTO userDTO, CommunicationsEvent communicationsEvent) {
@@ -135,5 +131,17 @@ public class EventHandlerService {
         } catch (IOException e) {
             sseEmitter.completeWithError(e);
         }
+    }
+
+    public boolean handleMessage(String userName, ChatDTO chatDTO) {
+        User user = userService.getUserByUserName(chatDTO.userName());
+        boolean sent = false;
+        if (user.getStatus().equals(UserStatus.ONLINE)) {
+            sent = sendMsg(chatDTO, userName);
+        }
+        if (!sent) {
+            storeMsgForLater(chatDTO,userName);
+        }
+        return sent;
     }
 }

@@ -4,10 +4,7 @@ import lombok.*;
 
 import java.io.Serializable;
 @AllArgsConstructor
-@NoArgsConstructor
 @Getter
-@Setter
-@ToString
 public class EmailDTO implements Serializable {
 
     private String subject;

@@ -5,6 +5,8 @@ import com.example.chat.service.EventHandlerService;
 import com.example.chat.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -26,24 +28,23 @@ public class AuthController {
     private final EventHandlerService eventHandlerService;
 
     @PostMapping("/login")
-    public String login(@RequestParam("username") String username,
-                        @RequestParam("password") String password,
-                        HttpSession session) {
-        Authentication authentication = authenticationProvider.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+    public ResponseEntity<String> login(@RequestParam("username") String username,
+                                @RequestParam("password") String password,
+                                HttpSession session) {
+        Authentication authentication = authenticationProvider.authenticate(
+                new UsernamePasswordAuthenticationToken(username, password));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
-        userService.updateStatus(username, UserStatus.ONLINE);
         eventHandlerService.registerUser(username);
-        return "redirect:/chat";
+        return new ResponseEntity<>("redirect:/chat", HttpStatus.OK);
     }
 
-//    @GetMapping("/logout")
     @PostMapping("/api/v1/logout")
-    public String logout(Principal principal) {
+    public ResponseEntity<String> logout(Principal principal) {
         SecurityContextHolder.clearContext();
         log.info("User {} logged out", principal.getName());
         userService.updateStatus(principal.getName(), UserStatus.OFFLINE);
 
-        return "redirect:/home";
+        return new ResponseEntity<>("redirect:/home", HttpStatus.OK);
     }
 }
