@@ -37,9 +37,6 @@ private final AuthenticationProvider authenticationProvider;
                         .clearAuthentication(true))
                 .csrf(csrf -> csrf.disable());
 
-//        http.addFilterBefore(new CustomUsernamePasswordAuthenticationFilter(authenticationManager()),
-//                UsernamePasswordAuthenticationFilter.class);
-
         return http.build();
     }
 

@@ -4,6 +4,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -21,8 +22,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler{
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<String> BusinessNotFoundHandler(RuntimeException runtimeException) {
+    public ResponseEntity<String> RuntimeExceptionHandler(RuntimeException runtimeException) {
         return new ResponseEntity<String>(runtimeException.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<String> BadCredentialsExceptionHandler(BadCredentialsException badCredentialsException) {
+        return new ResponseEntity<String>(badCredentialsException.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
     @Override
