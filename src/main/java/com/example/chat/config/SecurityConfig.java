@@ -28,7 +28,7 @@ private final AuthenticationProvider authenticationProvider;
                         //DEFINE PUBLIC ENDPOINTS IF ANY
                         .requestMatchers("/public/**").permitAll()
                         .requestMatchers("/login").permitAll()
-                        .requestMatchers("/api/v1/users/register").permitAll()
+                        .requestMatchers("/register").permitAll()
                         //ALL THE REST AUTHENTICATION REQUIRED
                         .anyRequest().authenticated())
                 .httpBasic(withDefaults())

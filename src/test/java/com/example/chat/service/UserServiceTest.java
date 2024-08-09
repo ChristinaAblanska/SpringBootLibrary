@@ -71,7 +71,7 @@ class UserServiceTest {
         UserResponse expectedUser = new UserResponse(user.getFirstName(), user.getLastName(),
                 user.getUserName(), user.getEmail());
         Mockito.when(userRepository.getByUserName(userName)).thenReturn(user);
-        UserResponse actualUser = userService.getDTOByUserName(userName);
+        UserResponse actualUser = userService.getUserResponseByUserName(userName);
         assertEquals(expectedUser, actualUser);
     }
 
@@ -80,7 +80,7 @@ class UserServiceTest {
         String userName = user.getUserName();
         Mockito.when(userRepository.getByUserName(userName)).thenReturn(null);
         BusinessNotFound exception = assertThrows(BusinessNotFound.class,
-                () -> userService.getDTOByUserName(userName));
+                () -> userService.getUserResponseByUserName(userName));
         String expectedMessage = "User with userName: " + userName + " not found!";
         String actualMessage = exception.getMessage();
         assertEquals(expectedMessage, actualMessage);

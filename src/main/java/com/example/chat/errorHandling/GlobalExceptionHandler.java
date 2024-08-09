@@ -15,22 +15,15 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler{
-    //    @ExceptionHandler(Exception.class)
-//    public ResponseEntity<Map<String, String>> BusinessNotFoundHandler(Exception e) {
-//        LinkedHashMap<String, String> error = new LinkedHashMap<>();
-//        error.put("Timestamp: ", String.valueOf(LocalDateTime.now()));
-//        error.put("Error Message: ", "Something went wrong: " + e.getMessage());
-//        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
-//    }
     @ExceptionHandler(BusinessNotFound.class)
     public ResponseEntity<String> BusinessNotFoundHandler(BusinessNotFound businessNotFound) {
         return new ResponseEntity<String>(businessNotFound.getMessage(), HttpStatus.NOT_FOUND);
     }
 
-//    @ExceptionHandler(InactiveUserException.class)
-//    public ResponseEntity<String> InactiveUserExceptionHandler(InactiveUserException inactiveUserException) {
-//        return new ResponseEntity<String>(inactiveUserException.getMessage(), HttpStatus.METHOD_NOT_ALLOWED);
-//    }
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<String> BusinessNotFoundHandler(RuntimeException runtimeException) {
+        return new ResponseEntity<String>(runtimeException.getMessage(), HttpStatus.BAD_REQUEST);
+    }
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
